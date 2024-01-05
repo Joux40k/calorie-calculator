@@ -10,13 +10,15 @@ class DbService:
         self.create_tables()
 
     def create_tables(self):
-        self.cursor.execute("CREATE TABLE IF NOT EXISTS foods (id INTEGER PRIMARY KEY, name TEXT, calories_per_100 REAL, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)")
+        self.cursor.execute(
+            "CREATE TABLE IF NOT EXISTS foods (id INTEGER PRIMARY KEY, name TEXT, calories_per_100 REAL, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)")
         self.cursor.execute("CREATE TABLE IF NOT EXISTS history (id INTEGER PRIMARY KEY, food INTEGER, amount REAL)")
         self.conn.commit()
 
-    def add_food(self, food, calories_per_100):
-        self.cursor.execute("INSERT INTO foods (name, calories_per_100) VALUES (?,?)", (food, calories_per_100))
+    def add_food(self, food: Food):
+        self.cursor.execute("INSERT INTO foods (name, calories_per_100) VALUES (?,?)", (food.get_name(), food.get_calories_per_100g()))
         self.conn.commit()
+
     def get_all_foods(self):
         self.cursor.execute("SELECT * FROM foods")
         foods = []
@@ -41,6 +43,7 @@ class DbService:
     def get_all_history(self):
         self.cursor.execute("SELECT food, amount, created_at FROM history")
         return self.cursor.fetchall()
+
 
 db = DbService()
 print(db.get_all_foods())
